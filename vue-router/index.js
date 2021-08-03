@@ -42,12 +42,26 @@ export default class VueRouter {
 
   // 创建 RouterLink
   initComponents (Vue) {
-    // 需要完整版的 vue
+    // 需要完整版的 vue  runtime + compiler 
+    // Vue.component('router-link', {
+    //   props: {
+    //     to: String,
+    //   },
+    //   template: '<a :href="to"><slot></slot></a>'
+    // })
+
+    // 运行时版本 runtime
     Vue.component('router-link', {
       props: {
         to: String,
       },
-      template: '<a :href="to"><slot></slot></a>'
+      render (h) {
+        return h('a', {
+          attrs: {
+            href: this.to,
+          }
+        }, [this.$slots.default])
+      }
     })
   }
 
