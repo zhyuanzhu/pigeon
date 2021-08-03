@@ -1,5 +1,6 @@
 let _Vue = null;
 const EMPTY_OBJECT = {};
+// TODO  单例实现下 Store
 class Store {
   constructor(options) {
     const {
