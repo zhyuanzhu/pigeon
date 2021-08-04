@@ -17,7 +17,8 @@ export default class VueRouter {
       beforeCreate() {
         // Vue 实例化的时候 $options 中才有 router，组建的 $options 中没有 router
         if (this.$options.router) {
-          _Vue.prototype.$router = this.$options.router
+          _Vue.prototype.$router = this.$options.router;
+          this.$options.router.init();
         }
       },
     })
@@ -31,6 +32,12 @@ export default class VueRouter {
     this.data = _Vue.observable({
       current: '/'
     })
+  }
+
+  init () {
+    this.createRouterMap();
+    this.initComponents();
+    this.initEvent();
   }
 
   createRouterMap () {
@@ -59,9 +66,36 @@ export default class VueRouter {
         return h('a', {
           attrs: {
             href: this.to,
+          },
+          on: {
+            click: this.handlerClick
           }
         }, [this.$slots.default])
+      },
+      methods: {
+        handlerClick (e) {
+          e.preventDefault();
+          const { to } = this;
+          history.pushState({}, '', to);
+          this.$router.data.current = to;
+        }
+      },
+    })
+
+    const _this = this;
+    Vue.component('router-view', {
+      render (h) {
+        const current = _this.data.current;
+        const component = _this.routerMap[current];
+        return h(component)
       }
+    })
+  }
+
+  // 处理事件
+  initEvent () {
+    window.addEventListener('popstate', () => {
+      this.data.current = window.location.pathname
     })
   }
 
